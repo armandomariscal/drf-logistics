@@ -8,23 +8,22 @@ class DjangoOrderRepository(OrderRepository):
 
     def save(self, order: Order) -> Order:
 
-        model = OrderModel.objects.create(
-            tracking_number=order.tracking_number,
-            customer_name=order.customer_name,
-            origin=order.origin,
-            destination=order.destination,
-            status=order.status,
-        )
+        if order.id:
+            model = OrderModel.objects.get(id=order.id)
+        else:
+            model = OrderModel()
 
-        return Order(
-            id=model.id,
-            tracking_number=model.tracking_number,
-            customer_name=model.customer_name,
-            origin=model.origin,
-            destination=model.destination,
-            status=model.status,
-            created_at=model.created_at,
-        )
+        model.tracking_number = order.tracking_number
+        model.customer_name = order.customer_name
+        model.origin = order.origin
+        model.destination = order.destination
+        model.status = order.status
+
+        model.save()
+
+        order.id = model.id
+
+        return order
 
 
     def get_by_id(self, order_id: int) -> Optional[Order]:

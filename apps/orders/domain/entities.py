@@ -12,3 +12,10 @@ class Order:
     destination: str
     status: str
     created_at: Optional[datetime] = None
+
+
+class OrderStatus:
+    CREATED = "CREATED"
+    ASSIGNED = "ASSIGNED"
+    CANCELLED = "CANCELLED"
+    SHIPPED = "SHIPPED"

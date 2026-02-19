@@ -1,6 +1,10 @@
-from apps.orders.domain.entities import Order
+from apps.orders.domain.entities import Order, OrderStatus
 from apps.orders.domain.repositories import OrderRepository
-
+from apps.orders.domain.exceptions import (
+    OrderAlreadyExists,
+    OrderNotFound,
+    InvalidOrderData
+)
 
 class OrderService:
 
@@ -16,10 +20,23 @@ class OrderService:
         destination: str,
     ) -> Order:
 
+        # Business rules (Service Layer)
+
+        if not tracking_number:
+            raise InvalidOrderData("tracking_number is required")
+
+        if not customer_name:
+            raise InvalidOrderData("customer_name is required")
+
+        if origin == destination:
+            raise InvalidOrderData("origin and destination cannot be the same")
+
         existing = self.repository.get_by_tracking_number(tracking_number)
 
         if existing:
-            raise Exception("Order with this tracking number already exists")
+            raise OrderAlreadyExists(
+                "Order with this tracking number already exists"
+        )
 
         order = Order(
             id=None,
@@ -27,7 +44,7 @@ class OrderService:
             customer_name=customer_name,
             origin=origin,
             destination=destination,
-            status="CREATED",
+            status=OrderStatus.CREATED,
         )
 
         return self.repository.save(order)
@@ -38,7 +55,7 @@ class OrderService:
         order = self.repository.get_by_id(order_id)
 
         if not order:
-            raise Exception("Order not found")
+            raise OrderNotFound("Order not found")
 
         return order
 
@@ -46,3 +63,35 @@ class OrderService:
     def list_orders(self):
 
         return self.repository.list()
+
+    def assign_order(self, order_id: int) -> Order:
+
+        order = self.repository.get_by_id(order_id)
+
+        if not order:
+            raise OrderNotFound("Order not found")
+
+        if order.status != OrderStatus.CREATED:
+            raise InvalidOrderData("Only CREATED orders can be assigned")
+
+        order.status = "ASSIGNED"
+
+        return self.repository.save(order)
+    
+
+    def cancel_order(self, order_id: int) -> Order:
+
+        order = self.repository.get_by_id(order_id)
+
+        if not order:
+            raise OrderNotFound("Order not found")
+
+        if order.status == "CANCELLED":
+            raise InvalidOrderData("Order already cancelled")
+
+        if order.status == "SHIPPED":
+            raise InvalidOrderData("Cannot cancel shipped order")
+
+        order.status = "CANCELLED"
+
+        return self.repository.save(order)
