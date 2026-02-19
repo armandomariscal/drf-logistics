@@ -64,3 +64,39 @@ class OrderDetailView(APIView):
         return Response(
             OrderSerializer(order).data
         )
+
+
+class OrderAssignView(APIView):
+
+    def post(self, request, order_id):
+
+        repository = DjangoOrderRepository()
+        service = OrderService(repository)
+
+        driver_id = request.data.get("driver_id")
+
+        order = service.assign_order(
+            order_id=order_id,
+            driver_id=driver_id
+        )
+
+        return Response({
+            "id": order.id,
+            "status": order.status,
+            "driver_id": order.driver_id
+        })
+
+
+class OrderCancelView(APIView):
+
+    def post(self, request, order_id):
+
+        repository = DjangoOrderRepository()
+        service = OrderService(repository)
+
+        order = service.cancel_order(order_id)
+
+        return Response({
+            "id": order.id,
+            "status": order.status
+        })

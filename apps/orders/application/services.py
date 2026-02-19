@@ -64,7 +64,7 @@ class OrderService:
 
         return self.repository.list()
 
-    def assign_order(self, order_id: int) -> Order:
+    def assign_order(self, order_id: int, driver_id: int) -> Order:
 
         order = self.repository.get_by_id(order_id)
 
@@ -74,6 +74,7 @@ class OrderService:
         if order.status != OrderStatus.CREATED:
             raise InvalidOrderData("Only CREATED orders can be assigned")
 
+        order.driver_id = driver_id
         order.status = "ASSIGNED"
 
         return self.repository.save(order)
