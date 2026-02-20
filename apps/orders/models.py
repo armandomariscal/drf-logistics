@@ -1,3 +1,3 @@
-from apps.orders.infrastructure.models import OrderModel
+from apps.payments.infrastructure.models import PaymentModel
 
-__all__ = ["OrderModel"]
+__all__ = ["PaymentModel"]

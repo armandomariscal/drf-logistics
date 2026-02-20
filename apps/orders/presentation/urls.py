@@ -8,8 +8,8 @@ from .views import (
 )
 
 urlpatterns = [
-    path("orders/", OrderListCreateView.as_view()),
-    path("orders/<int:order_id>/", OrderDetailView.as_view()),
-    path("orders/<int:order_id>/assign/", OrderAssignView.as_view()),
-    path("orders/<int:order_id>/cancel/", OrderCancelView.as_view()),
+    path("orders/", OrderListCreateView.as_view(), name="order-list-create"),
+    path("orders/<int:order_id>/", OrderDetailView.as_view(), name="order-detail"),
+    path("orders/<int:order_id>/assign/", OrderAssignView.as_view(), name="order-assign"),
+    path("orders/<int:order_id>/cancel/", OrderCancelView.as_view(), name="order-cancel"),
 ]

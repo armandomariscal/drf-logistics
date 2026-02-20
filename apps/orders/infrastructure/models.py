@@ -1,14 +1,8 @@
 from django.db import models
+from apps.orders.domain.entities import OrderStatus
 
 
 class OrderModel(models.Model):
-
-    class Status(models.TextChoices):
-        CREATED = "CREATED", "Created"
-        ASSIGNED = "ASSIGNED", "Assigned"
-        IN_TRANSIT = "IN_TRANSIT", "In Transit"
-        DELIVERED = "DELIVERED", "Delivered"
-        CANCELLED = "CANCELLED", "Cancelled"
 
     tracking_number = models.CharField(
         max_length=100,
@@ -29,8 +23,8 @@ class OrderModel(models.Model):
 
     status = models.CharField(
         max_length=20,
-        choices=Status.choices,
-        default=Status.CREATED
+        choices=OrderStatus.CHOICES,
+        default=OrderStatus.CREATED
     )
 
     created_at = models.DateTimeField(

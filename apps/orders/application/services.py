@@ -5,6 +5,8 @@ from apps.orders.domain.exceptions import (
     OrderNotFound,
     InvalidOrderData
 )
+from apps.messaging.nats import nats
+
 
 class OrderService:
 
@@ -47,7 +49,11 @@ class OrderService:
             status=OrderStatus.CREATED,
         )
 
-        return self.repository.save(order)
+        saved_order = self.repository.save(order)
+        
+        nats.publish("OrderCreated", {"order_id": saved_order.id})
+        
+        return saved_order
 
 
     def get_order(self, order_id: int):
@@ -63,6 +69,7 @@ class OrderService:
     def list_orders(self):
 
         return self.repository.list()
+
 
     def assign_order(self, order_id: int, driver_id: int) -> Order:
 
@@ -90,8 +97,8 @@ class OrderService:
         if order.status == "CANCELLED":
             raise InvalidOrderData("Order already cancelled")
 
-        if order.status == "SHIPPED":
-            raise InvalidOrderData("Cannot cancel shipped order")
+        if order.status == "IN_TRANSIT":
+            raise InvalidOrderData("Cannot cancel in transit order")
 
         order.status = "CANCELLED"
 

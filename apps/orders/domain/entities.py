@@ -17,5 +17,16 @@ class Order:
 class OrderStatus:
     CREATED = "CREATED"
     ASSIGNED = "ASSIGNED"
+    PAID = "PAID"
+    IN_TRANSIT = "IN_TRANSIT"
+    DELIVERED = "DELIVERED"
     CANCELLED = "CANCELLED"
-    SHIPPED = "SHIPPED"
+
+    CHOICES = [
+        (CREATED, "Created"),
+        (ASSIGNED, "Assigned"),
+        (PAID, "Paid"),
+        (IN_TRANSIT, "In Transit"),
+        (DELIVERED, "Delivered"),
+        (CANCELLED, "Cancelled"),
+    ]
