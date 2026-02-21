@@ -24,7 +24,9 @@ class PaymentService:
             raise OrderNotFound("Order not found")
 
         if order.status in [OrderStatus.CANCELLED, OrderStatus.IN_TRANSIT]:
-            raise InvalidOrderData("Cannot register payment for cancelled or in transit order")
+            raise InvalidOrderData(
+                "Cannot register payment for cancelled or in transit order"
+            )
 
         payment = Payment(
             id=None,
@@ -38,24 +40,32 @@ class PaymentService:
 
     @transaction.atomic
     def confirm_payment(self, payment_id: int) -> Payment:
+
         payment = self.payment_repo.get_by_id(payment_id)
 
         if not payment:
             raise InvalidOrderData("Payment not found")
 
         if payment.status == PaymentStatus.CONFIRMED:
-            raise InvalidOrderData("Payment already confirmed")
+            return payment
 
         payment.confirm()
         self.payment_repo.save(payment)
 
         order = self.order_repo.get_by_id(payment.order_id)
-        order.status = OrderStatus.PAID
-        self.order_repo.save(order)
 
-        nats.publish("OrderPaid", {
-            "order_id": order.id,
-            "amount": payment.amount
-        })
+        if not order:
+            raise OrderNotFound("Order not found")
+
+        order_was_paid = order.status == OrderStatus.PAID
+
+        if not order_was_paid:
+            order.status = OrderStatus.PAID
+            self.order_repo.save(order)
+
+            nats.publish("OrderPaid", {
+                "order_id": order.id,
+                "amount": payment.amount
+            })
 
         return payment
