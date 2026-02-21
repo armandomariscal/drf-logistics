@@ -29,23 +29,74 @@ This project follows a layered architecture inspired by Clean Architecture and D
 
 The layers are organized as follows:
 
-- apps/orders/
-
-- domain/
-- entities.py
-- repositories.py
-
-- application/
-- services.py
-
-- infrastructure/
-- models.py
-- repositories.py
-
-- presentation/
-- serializers.py
-- views.py
-- urls.py
+```bash
+├── apps
+│   ├── messaging
+│   │   ├── __init__.py
+│   │   ├── nats.py
+│   │   └── subscribers.py
+│   ├── orders
+│   │   ├── admin.py
+│   │   ├── application
+│   │   │   └── services.py
+│   │   ├── apps.py
+│   │   ├── domain
+│   │   │   ├── entities.py
+│   │   │   ├── exceptions.py
+│   │   │   └── repositories.py
+│   │   ├── infrastructure
+│   │   │   ├── models.py
+│   │   │   └── repositories.py
+│   │   ├── __init__.py
+│   │   ├── migrations
+│   │   │   ├── 0001_initial.py
+│   │   │   ├── __init__.py
+│   │   ├── models.py
+│   │   ├── presentation
+│   │   │   ├── serializers.py
+│   │   │   ├── urls.py
+│   │   │   └── views.py
+│   │   ├── tests
+│   │   │   ├── __init__.py
+│   │   │   └── test_order_service.py
+│   │   └── tests.py
+│   └── payments
+│       ├── application
+│       │   ├── __init__.py
+│       │   └── services.py
+│       ├── apps.py
+│       ├── domain
+│       │   ├── entities.py
+│       │   ├── exceptions.py
+│       │   ├── __init__.py
+│       │   └── repositories.py
+│       ├── infrastructure
+│       │   ├── __init__.py
+│       │   ├── models.py
+│       │   └── repositories.py
+│       ├── __init__.py
+│       ├── migrations
+│       │   ├── 0001_initial.py
+│       │   ├── __init__.py
+│       ├── presentation
+│       │   ├── __init__.py
+│       │   ├── serializers.py
+│       │   ├── urls.py
+│       │   └── views.py
+│       └── tests
+│           ├── __init__.py
+│           └── test_payment_service.py
+├── db.sqlite3
+├── logistics
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+├── pytest.ini
+└── README.md
+```
 
 ### Layer Responsibilities
 
